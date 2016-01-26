@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:rgb(246,246,246);stop-opacity:1" />
+      <stop offset="100%" style="stop-color:rgb(201,201,201);stop-opacity:1" />
+    </linearGradient>
+  </defs>
+    
+    <g class="dropdownButtonRight">      
+        <rect x="0" y="0" height="28" width="30"
+            stroke-width="0"
+            fill="url(#grad1)"/>   
+                
+        <rect x="0" y="0" height="28" width="2"
+            stroke-width="0"
+            fill="#AAAAAA"/>     
+                
+        <g transform="translate(10,11)">
+            <path
+        style="fill:#3b3b3b;fill-opacity:1;stroke:none;stroke-width:0.90100002;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+        d="m 49.750014,30.592906 -3.473614,5.793564 -3.473614,5.793564 -3.280567,-5.90502 -3.280566,-5.90502 6.754181,0.111456 z"
+        transform="matrix(0.81407596,-0.0089449,0.01420974,0.51245292,-29.887917,-15.063262)" /> 
+        </g>
+    </g>
+</svg>
