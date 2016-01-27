@@ -1,3 +1,4 @@
+
 .drowdownWrapper { 
     display:block;
     width:300px;
@@ -28,10 +29,7 @@
     color:#4b4b4b;
     font-family: arial;
     border:1px #AAAAAA solid;
-    border-top:none;
     border-radius: 5px;
-    border-top-left-radius: 0;
-    border-top-right-radius: 0;
     background: #ffffff;
     overflow-y: scroll;
 }  
@@ -42,6 +40,9 @@
          display: block;
          word-wrap: break-word;
     } 
-    .dropdownListWrapper li:hover {
+    .dropdownListWrapper li:first-child {
+        border-top:none;
+    }
+    .dropdownListWrapper li:hover, .dropdownListWrapper li.active{
         background-color:#e5e5e5;
     }

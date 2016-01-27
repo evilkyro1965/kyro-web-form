@@ -38,7 +38,7 @@ function Dropdown(objectId){
             '</div>');
             
     this.dropdownButtonSvg = Snap(this.selectorId+" .dropdownSvg");        
-    
+    $(_this.selectorId+" "+_this.listWrapperClass).perfectScrollbar();
     Snap.load("svg/combo-button-button-bg.svg",snapLoadDropdownButton);
 
     $(_this.selectorId+" "+_this.dropdownWrapperClass).on('click', _this.dropdownButtonWrapper, function(event){ 
@@ -47,6 +47,7 @@ function Dropdown(objectId){
         }
         else {
             $(_this.selectorId+" "+_this.listWrapperClass).show();
+            setListHeight();
         }
     });
     
@@ -57,6 +58,8 @@ function Dropdown(objectId){
         var label = target.html();
         _this.selectedIndex = index;
         _this.selectedValue = value;
+        $(_this.selectorId+" li").removeClass('active');
+        target.addClass('active');
         $(_this.selectorId+" .label").html(label);
         $(_this.selectorId+" "+_this.listWrapperClass).hide();
         _this.onChange(event);
@@ -121,10 +124,6 @@ function Dropdown(objectId){
         
         //Set the list wrapper width
         $(_this.selectorId+" "+_this.listWrapperClass).width(width);
-        
-        //Set the list wrapper position relative
-        var listTop = height;
-        $(_this.selectorId+" "+_this.listWrapperClass).css('top',listTop+'px');
 
         //List height is height + 2 x padding top
         var listHeight = height - (2 * _this.list.paddingTop);
@@ -133,9 +132,6 @@ function Dropdown(objectId){
         
         //Generate Dropdown list
         generateDropdownList();
-        
-        //Set List Height
-        setListHeight();
         
         //Setting the list item height, padding value, and line height
         $(_this.selectorId+" "+_this.listWrapperClass+" li").height(listHeight);
@@ -146,7 +142,7 @@ function Dropdown(objectId){
     function generateDropdownList() {
         //Generate the default item 
         $(_this.selectorId+" "+_this.listWrapperClass).html("");
-        var defaultList = "<li data-index=\"-1\" data-value=\"null\">"+_this.label+"</li>"
+        var defaultList = "<li class=\"active\" data-index=\"-1\" data-value=\"null\">"+_this.label+"</li>"
         $(_this.selectorId+" "+_this.listWrapperClass).append(defaultList);
         
         //Generate the items from data
@@ -158,27 +154,41 @@ function Dropdown(objectId){
     };
     
     function setListHeight() {
-        var height = $(_this.selectorId+" "+_this.dropdownWrapperClass).height();
-        //listHeihgt = height + 1, caused is use 1px on border top
-        var listHeight = height + 1;
         var dataLength = _this.data.length;
-        var documentHeight = $(document).height();
-        var elementTop = $(_this.selectorId+" "+_this.dropdownWrapperClass).position().top;
+        var width = $(_this.selectorId+" "+_this.dropdownWrapperClass).width();
+        var height = $(_this.selectorId+" "+_this.dropdownWrapperClass).height();
+        var windowHeight = $(window).height();
+        var dropdownPositionTop = $(_this.selectorId+" "+_this.dropdownWrapperClass).offset().top;
+        var topSpace = dropdownPositionTop;
+        var bottomSpace = windowHeight - (dropdownPositionTop + height);
         
-        //Total list height, height sum all data length 
-        var totalListHeight = (dataLength + 1)* listHeight;
-        ///Optimal height
-        var optimalHeight = totalListHeight;
-        //Height sum that window can containt
-        var heightPlusTop = totalListHeight + elementTop + height;
+        var isExpandBottom = topSpace > bottomSpace ? false : true;
         
-        //If heightPlusTop is too long, so cut it
-        if(heightPlusTop > documentHeight) {
-            optimalHeight = documentHeight - (elementTop + 2 * listHeight);
+        var listTop = height;
+        
+        var totalNeededHeight = (dataLength + 1) * (height+1);
+        
+        if(isExpandBottom) {
+            //Set the list wrapper position relative
+            $(_this.selectorId+" "+_this.listWrapperClass).css('top',listTop+'px');
+            var optimalHeight = (80/100) * bottomSpace; 
+            optimalHeight = optimalHeight > totalNeededHeight ? totalNeededHeight : optimalHeight;
+            $(_this.selectorId+" "+_this.listWrapperClass).height(optimalHeight);
+            
+            $(_this.selectorId+" "+_this.listWrapperClass).width(width).height(optimalHeight);
+            $(_this.selectorId+" "+_this.listWrapperClass).perfectScrollbar('update');
+        }
+        else {
+            //Set the list wrapper position relative
+            var optimalHeight = (80/100) * topSpace; 
+            optimalHeight = optimalHeight > totalNeededHeight ? totalNeededHeight : optimalHeight;
+            var listWrapperTop = optimalHeight;
+            $(_this.selectorId+" "+_this.listWrapperClass).css('top',"-"+listWrapperTop+'px');
+            
+            $(_this.selectorId+" "+_this.listWrapperClass).width(width).height(optimalHeight);
+            $(_this.selectorId+" "+_this.listWrapperClass).perfectScrollbar('update');
         }
         
-        optimalHeight = optimalHeight > _this.MAX_HEIGHT ? _this.MAX_HEIGHT : optimalHeight;
-        $(_this.selectorId+" "+_this.listWrapperClass).height(optimalHeight);
     };
     
 }
