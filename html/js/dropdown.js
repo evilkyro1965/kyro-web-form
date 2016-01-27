@@ -6,7 +6,7 @@ function Dropdown(objectId){
     
     this.selectorId = objectId;  
     this.id = objectId.substring(1, (objectId.length-1));
-    this.dropdownButtonSvg = Snap(this.selectorId+" .dropdownSvg");
+    
     this.label = "Select";
     this.rightButton = {};
     this.rightButton.width = 30;
@@ -22,9 +22,22 @@ function Dropdown(objectId){
     };
     this.selectedValue = null;
     
-    this.data = [{"label":"test","value":"test1"}];
+    this.data = [];
     
     var _this = this;
+    
+    $(_this.selectorId).append(
+            '<div class="drowdownWrapper">'+
+            '    <div class="dropdownButtonWrapper">'+
+            '        <svg class="dropdownSvg">'+
+            '        </svg>'+
+            '        <span class="label"></span>'+
+            '    </div>'+
+            '    <ul class="dropdownListWrapper">'+
+            '    </ul>'+
+            '</div>');
+            
+    this.dropdownButtonSvg = Snap(this.selectorId+" .dropdownSvg");        
     
     Snap.load("svg/combo-button-button-bg.svg",snapLoadDropdownButton);
 
