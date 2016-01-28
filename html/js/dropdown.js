@@ -8,6 +8,7 @@ function Dropdown(objectId){
     this.id = objectId.substring(1, (objectId.length-1));
     
     this.label = "Select";
+    this.width = 0;
     this.rightButton = {};
     this.rightButton.width = 30;
     this.arrow = {};
@@ -21,6 +22,9 @@ function Dropdown(objectId){
       console.log('hi');  
     };
     this.selectedValue = null;
+    this.isDisabled = false;
+    this.disabledColor = "#ababab";
+    this.arrowcolor = "#3b3b3b";
     
     this.data = [];
     
@@ -36,7 +40,7 @@ function Dropdown(objectId){
             '    <ul class="dropdownListWrapper">'+
             '    </ul>'+
             '</div>');
-            
+    this.labelColor = $(_this.selectorId+" .label").css('color');      
     this.dropdownButtonSvg = Snap(this.selectorId+" .dropdownSvg");        
     $(_this.selectorId+" "+_this.listWrapperClass).perfectScrollbar();
     Snap.load("svg/combo-button-button-bg.svg",snapLoadDropdownButton);
@@ -46,8 +50,10 @@ function Dropdown(objectId){
             $(_this.selectorId+" "+_this.listWrapperClass).hide();
         }
         else {
-            $(_this.selectorId+" "+_this.listWrapperClass).show();
-            setListHeight();
+            if(_this.isDisabled != true) {
+                $(_this.selectorId+" "+_this.listWrapperClass).show();
+                setListHeight();
+            }
         }
     });
     
@@ -76,8 +82,10 @@ function Dropdown(objectId){
     
     function snapLoadDropdownButton(f) {
         //Dropdown width & height, get and set from css
-        var width = $(_this.selectorId+" "+_this.dropdownWrapperClass).width();
+        _this.width = $(_this.selectorId+" "+_this.dropdownWrapperClass).width();
+        var width = _this.width;
         var height = $(_this.selectorId+" "+_this.dropdownWrapperClass).height();
+        console.log(width);
         
         //Get svg defs, like gradient & append it to svg wrapper
         var el = f.select("defs");
@@ -155,7 +163,7 @@ function Dropdown(objectId){
     
     function setListHeight() {
         var dataLength = _this.data.length;
-        var width = $(_this.selectorId+" "+_this.dropdownWrapperClass).width();
+        var width = _this.width;
         var height = $(_this.selectorId+" "+_this.dropdownWrapperClass).height();
         var windowHeight = $(window).height();
         var dropdownPositionTop = $(_this.selectorId+" "+_this.dropdownWrapperClass).offset().top;
@@ -168,27 +176,79 @@ function Dropdown(objectId){
         
         var totalNeededHeight = (dataLength + 1) * (height+1);
         
+        var optimalHeight = null;
+        
         if(isExpandBottom) {
             //Set the list wrapper position relative
             $(_this.selectorId+" "+_this.listWrapperClass).css('top',listTop+'px');
-            var optimalHeight = (80/100) * bottomSpace; 
+            optimalHeight = (80/100) * bottomSpace; 
             optimalHeight = optimalHeight > totalNeededHeight ? totalNeededHeight : optimalHeight;
             $(_this.selectorId+" "+_this.listWrapperClass).height(optimalHeight);
-            
-            $(_this.selectorId+" "+_this.listWrapperClass).width(width).height(optimalHeight);
-            $(_this.selectorId+" "+_this.listWrapperClass).perfectScrollbar('update');
         }
         else {
             //Set the list wrapper position relative
-            var optimalHeight = (80/100) * topSpace; 
+            optimalHeight = (80/100) * topSpace; 
             optimalHeight = optimalHeight > totalNeededHeight ? totalNeededHeight : optimalHeight;
             var listWrapperTop = optimalHeight;
             $(_this.selectorId+" "+_this.listWrapperClass).css('top',"-"+listWrapperTop+'px');
-            
-            $(_this.selectorId+" "+_this.listWrapperClass).width(width).height(optimalHeight);
-            $(_this.selectorId+" "+_this.listWrapperClass).perfectScrollbar('update');
         }
         
+        $(_this.selectorId+" "+_this.listWrapperClass).width(width).height(optimalHeight);
+        $(_this.selectorId+" "+_this.listWrapperClass).perfectScrollbar('update');
+        
+        $(_this.selectorId+" "+_this.listWrapperClass).scrollTop( (_this.selectedIndex-1) * (height + 1) );
+        
+    };
+    
+    this.setValue = function(newValue) {
+        if(newValue==null || newValue=="") {
+            var selectedIndex = 1;
+            var target = $(_this.selectorId+" "+_this.listWrapperClass+" li:nth-child("+selectedIndex+")");
+            var index = target.data("index");
+            var value = target.data("value");
+            var label = target.html();
+            _this.selectedIndex = index;
+            _this.selectedValue = value;
+            $(_this.selectorId+" li").removeClass('active');
+            target.addClass('active');
+            $(_this.selectorId+" .label").html(label);
+            $(_this.selectorId+" "+_this.listWrapperClass).hide();
+        }   
+        else { 
+            for (var i = 0; i < _this.data.length; i++) {
+                var obj = _this.data[i];
+                if(obj.value==newValue) {
+                    var selectedIndex = i + 2;
+                    var target = $(_this.selectorId+" "+_this.listWrapperClass+" li:nth-child("+selectedIndex+")");
+                    var index = target.data("index");
+                    var value = target.data("value");
+                    var label = target.html();
+                    _this.selectedIndex = index;
+                    _this.selectedValue = value;
+                    $(_this.selectorId+" li").removeClass('active');
+                    target.addClass('active');
+                    $(_this.selectorId+" .label").html(_this.label);
+                    $(_this.selectorId+" "+_this.listWrapperClass).hide();
+                    break;
+                }
+            }
+        }
+    };
+    
+    this.disable = function() {
+        _this.dropdownButtonSvg.select(".dropdownArrow path").attr({
+            fill:_this.disabledColor
+        }); 
+        $(_this.selectorId+" .label").css('color',_this.disabledColor);
+        _this.isDisabled = true;
+    };
+    
+    this.enable = function() {
+        _this.dropdownButtonSvg.select(".dropdownArrow path").attr({
+            fill:_this.arrowcolor
+        }); 
+        $(_this.selectorId+" .label").css('color',_this.labelColor);
+        _this.isDisabled = false;
     };
     
 }
