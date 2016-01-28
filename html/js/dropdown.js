@@ -1,3 +1,9 @@
+/*
+ * Author : Fahrurrazi
+ * Author Contact : evilkyro1965@yahoo.com
+ * Version : 0.9
+ */
+
 function Dropdown(objectId){
     this.MAX_HEIGHT = 400;
     this.dropdownWrapperClass = ".drowdownWrapper";
